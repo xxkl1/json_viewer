@@ -1,7 +1,12 @@
 import { log, loadBody } from './utils.js'
 import http from 'http'
 import fs from 'fs'
-// import ws from 'ws'
+import { WebSocketServer } from 'ws'
+import type { WebSocket } from 'ws'
+
+const global = {
+    sockets: new Set<WebSocket>()
+}
 
 const handleIndex = function (
     request: http.IncomingMessage,
@@ -25,8 +30,24 @@ const handleSend = function (
     response: http.ServerResponse
 ) {
     loadBody(request, response, (body) => {
+        global.sockets.forEach((s) => s.send(body.toString()))
         response.statusCode = 200
         response.end('ok')
+    })
+}
+
+const createWebSocket = function (httpServer: http.Server) {
+    const ws = new WebSocketServer({ server: httpServer })
+
+    ws.on('connection', (socket) => {
+        global.sockets.add(socket)
+        socket.on('close', () => {
+            global.sockets.delete(socket)
+        })
+    })
+
+    ws.on('message', (data) => {
+        console.log('received: ', data)
     })
 }
 
@@ -39,13 +60,14 @@ const createServer = function () {
             handleSend(request, response)
         }
     })
-
     server.listen(3000)
+    return server
 }
 
 const __main = function () {
     log('run main')
-    createServer()
+    const httpServer = createServer()
+    createWebSocket(httpServer)
 }
 
 __main()

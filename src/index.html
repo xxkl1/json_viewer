@@ -1,33 +1,43 @@
-<div>test html</div>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
 
 <script>
-    // 请求数据
-    const data = {
-        name: 'Alice',
-        age: 20
+    const log = console.log.bind(console)
+
+    const getTimeStr = function () {
+        const d = new Date()
+        const year = d.getFullYear()
+        const month = d.getMonth() + 1
+        const day = d.getDate()
+        const hour = d.getHours()
+        const minute = d.getMinutes()
+        const second = d.getSeconds()
+        const timeStr = `${year}-${month}-${day} ${hour}:${minute}:${second}`
+        return timeStr
     }
 
-    // 将请求数据转换成 JSON 字符串并创建请求对象
-    const request = new Request('http://localhost:3000/send', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
+    const createWebSocket = function () {
+        const ws = new WebSocket('ws://localhost:3000/')
 
-    // 发送请求并处理响应
-    fetch(request)
-        .then((response) => {
-            if (response.ok) {
-                return response.json()
-            }
-            throw new Error('Network response was not ok')
-        })
-        .then((data) => {
-            console.log(data)
-        })
-        .catch((error) => {
-            console.error('Error:', error)
-        })
+        ws.onopen = function () {
+            log('websocket connected')
+        }
+
+        ws.onmessage = function (event) {
+            const d = event.data
+            log(`-----------message ${getTimeStr()}-----------`)
+            log(JSON.parse(d))
+        }
+
+        ws.onerror = function (error) {
+            log('error:', error)
+        }
+    }
+
+    const __main = function () {
+        createWebSocket()
+    }
+
+    __main()
 </script>

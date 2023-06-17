@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc -w & nodemon -q -w ./dist/ ./dist/main.js",
-    "start": "node ./dist/main.js"
+    "dev": "tsc -w & nodemon -q -w ./dist/ ./dist/src/main.js",
+    "start": "node ./dist/src/main.js",
+    "test": "node ./dist/test/index.js"
   },
   "author": "",
   "license": "ISC",

@@ -1,7 +1,10 @@
 import { log, loadBody } from './utils.js';
 import http from 'http';
 import fs from 'fs';
-// import ws from 'ws'
+import { WebSocketServer } from 'ws';
+var global = {
+    sockets: new Set()
+};
 var handleIndex = function (request, response) {
     var res = response;
     fs.readFile('./src/index.html', function (err, data) {
@@ -17,8 +20,21 @@ var handleIndex = function (request, response) {
 };
 var handleSend = function (request, response) {
     loadBody(request, response, function (body) {
+        global.sockets.forEach(function (s) { return s.send(body.toString()); });
         response.statusCode = 200;
         response.end('ok');
+    });
+};
+var createWebSocket = function (httpServer) {
+    var ws = new WebSocketServer({ server: httpServer });
+    ws.on('connection', function (socket) {
+        global.sockets.add(socket);
+        socket.on('close', function () {
+            global.sockets.delete(socket);
+        });
+    });
+    ws.on('message', function (data) {
+        console.log('received: ', data);
     });
 };
 var createServer = function () {
@@ -32,9 +48,11 @@ var createServer = function () {
         }
     });
     server.listen(3000);
+    return server;
 };
 var __main = function () {
     log('run main');
-    createServer();
+    var httpServer = createServer();
+    createWebSocket(httpServer);
 };
 __main();

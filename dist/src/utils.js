@@ -5,9 +5,8 @@ var loadBody = function (request, response, callback) {
     req.on('data', function (chunk) {
         chunks.push(chunk);
     }).on('end', function () {
-        var body = Buffer.concat(chunks).toString();
-        var json = JSON.parse(body);
-        callback(json);
+        var body = Buffer.concat(chunks);
+        callback(body);
     });
 };
 export { log, loadBody, };
