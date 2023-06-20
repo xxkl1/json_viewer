@@ -51,7 +51,7 @@ var createServer = function () {
     return server;
 };
 var __main = function () {
-    log('run main');
+    log('run server at http://localhost:3000');
     var httpServer = createServer();
     createWebSocket(httpServer);
 };

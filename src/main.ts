@@ -8,6 +8,11 @@ const global = {
     sockets: new Set<WebSocket>()
 }
 
+/**
+ * load index.html
+ * @param request
+ * @param response
+ */
 const handleIndex = function (
     request: http.IncomingMessage,
     response: http.ServerResponse
@@ -25,6 +30,11 @@ const handleIndex = function (
     })
 }
 
+/**
+ *
+ * @param request
+ * @param response
+ */
 const handleSend = function (
     request: http.IncomingMessage,
     response: http.ServerResponse
@@ -65,7 +75,7 @@ const createServer = function () {
 }
 
 const __main = function () {
-    log('run main')
+    log('run server at http://localhost:3000')
     const httpServer = createServer()
     createWebSocket(httpServer)
 }
