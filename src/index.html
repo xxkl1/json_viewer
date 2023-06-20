@@ -25,9 +25,14 @@
         }
 
         ws.onmessage = function (event) {
-            const d = event.data
-            log(`-----------message ${getTimeStr()}-----------`)
-            log(JSON.parse(d))
+            let d = JSON.parse(event.data)
+
+            if (d === 'clear') {
+                console.clear()
+            } else {
+                log(`-----------message ${getTimeStr()}-----------`)
+                log(d)
+            }
         }
 
         ws.onerror = function (error) {
